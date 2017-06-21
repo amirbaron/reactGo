@@ -5,6 +5,7 @@ import { connect } from './db';
 import initPassport from './init/passport';
 import initExpress from './init/express';
 import initRoutes from './init/routes';
+import initTickerUpdate from './init/ticker';
 import renderMiddleware from './render/middleware';
 
 const app = express();
@@ -43,6 +44,8 @@ initExpress(app);
  * Note: Some of these routes have passport and database model dependencies
  */
 initRoutes(app);
+
+initTickerUpdate();
 
 /*
  * This is where the magic happens. We take the locals data we have already
