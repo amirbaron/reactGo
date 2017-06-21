@@ -5,6 +5,7 @@ const postcssCssnext = require('postcss-cssnext');
 const postcssReporter = require('postcss-reporter');
 const PATHS = require('../paths');
 
+
 module.exports = ({ production = false, browser = false } = {}) => {
   /*
    * modules: boolean - Enable/Disable CSS Modules
@@ -23,8 +24,7 @@ module.exports = ({ production = false, browser = false } = {}) => {
    * css-loader/locals instead of style-loader!css-loader in the prerendering bundle.
    * It doesn't embed CSS but only exports the identifier mappings.
    */
-  const localIdentName = 'localIdentName=[name]__[local]___[hash:base64:5]';
-
+  const localIdentName = 'localIdentName=[name]__[local]___[hash:base64:5]!postcss?sourceMap';
   const createCssLoaders = embedCssInBundle => ([
     {
       loader: embedCssInBundle ? 'css-loader' : 'css-loader/locals',
@@ -32,7 +32,8 @@ module.exports = ({ production = false, browser = false } = {}) => {
         localIdentName,
         sourceMap: true,
         modules: true,
-        importLoaders: 1
+        importLoaders: 1,
+        sourceComments: true,
       }
     },
     {
@@ -64,7 +65,7 @@ module.exports = ({ production = false, browser = false } = {}) => {
   return {
     test: /\.css$/,
     use: browser ? browserLoaders : serverLoaders,
-    include: PATHS.app
+    include: [PATHS.app, PATHS.modules]
   };
 };
 
