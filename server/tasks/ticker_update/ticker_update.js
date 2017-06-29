@@ -9,10 +9,10 @@ export const tickerUpdate = () => {
     const livecoinFetcher = new LivecoinFetcher();
     const poloniexFetcher = new PoloniexFetcher();
     schedule.scheduleJob('0-59 * * * * *', function () {
-        axios.all([livecoinFetcher.getBtcEth(), poloniexFetcher.getBtcEth()])
-            .then(axios.spread(function (livecoin, poloniex) {
+        axios.all([livecoinFetcher.getBtcEth()])
+            .then(axios.spread(function (livecoin) {
                console.log(livecoin.data)
-               console.log(poloniex.data);
+               // console.log(poloniex.data);
             })).catch(() => []);
     });
 };

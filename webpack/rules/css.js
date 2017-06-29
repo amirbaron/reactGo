@@ -65,7 +65,7 @@ module.exports = ({ production = false, browser = false } = {}) => {
   return {
     test: /\.css$/,
     use: browser ? browserLoaders : serverLoaders,
-    include: [PATHS.app, PATHS.modules]
+    include: [PATHS.app, PATHS.modules, PATHS.modules+'/react-toolbox/']
   };
 };
 

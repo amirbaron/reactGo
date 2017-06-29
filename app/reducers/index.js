@@ -2,6 +2,7 @@ import { combineReducers } from 'redux';
 import { routerReducer as routing } from 'react-router-redux';
 import user from '../reducers/user';
 import topic from '../reducers/topic';
+import arbitrage from '../reducers/arbitrage';
 import message from '../reducers/message';
 import * as types from '../types';
 

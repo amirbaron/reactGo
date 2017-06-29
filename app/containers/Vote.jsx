@@ -8,7 +8,6 @@ import Scoreboard from '../components/Scoreboard';
 import { createTopic, typing, incrementCount,
   decrementCount, destroyTopic } from '../actions/topics';
 import styles from '../css/components/vote';
-import { Button } from 'react-toolbox/lib/button';
 
 const cx = classNames.bind(styles);
 
@@ -18,7 +17,6 @@ class Vote extends Component {
     const {newTopic, topics, typing, createTopic, destroyTopic, incrementCount, decrementCount } = this.props;
     return (
       <div className={cx('vote')}>
-        <Button label="Hello World!" />
         <EntryBox
           topic={newTopic}
           onEntryChange={typing}
