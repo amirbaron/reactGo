@@ -1,83 +1,47 @@
-import _ from 'lodash';
-import Topic from '../models/topics';
+import Ticker from '../models/tickers';
 
 /**
  * List
  */
+
 export function all(req, res) {
-  Topic.find({}).exec((err, topics) => {
+    Ticker.find({}).exec((err, tickers) => {
     if (err) {
       console.log('Error in first query');
       return res.status(500).send('Something went wrong getting the data');
     }
-
-    return res.json(topics);
+    console.log("tickers", tickers);
+    return res.json(tickers);
   });
 }
 
-/**
- * Add a Topic
- */
-export function add(req, res) {
-  Topic.create(req.body, (err) => {
-    if (err) {
-      console.log(err);
-      return res.status(400).send(err);
-    }
-
-    return res.status(200).send('OK');
-  });
-}
-
-/**
- * Update a topic
- */
-export function update(req, res) {
-  const query = { id: req.params.id };
-  const isIncrement = req.body.isIncrement;
-  const isFull = req.body.isFull;
-  const omitKeys = ['id', '_id', '_v', 'isIncrement', 'isFull'];
-  const data = _.omit(req.body, omitKeys);
-
-  if (isFull) {
-    Topic.findOneAndUpdate(query, data, (err) => {
-      if (err) {
-        console.log('Error on save!');
-        return res.status(500).send('We failed to save for some reason');
-      }
-
-      return res.status(200).send('Updated successfully');
+export function one(succ, errCb){
+    Ticker.findOne({}).sort({ date: -1 }).exec((err, ticker) => {
+        if (err) {
+            console.log('Error in fetching one ticker');
+            errCb()
+        }
+        succ(ticker);
     });
-  } else {
-    Topic.findOneAndUpdate(query, { $inc: { count: isIncrement ? 1 : -1 } }, (err) => {
-      if (err) {
-        console.log('Error on save!');
-        return res.status(500).send('We failed to save for some reason');
-      }
-
-      return res.status(200).send('Updated successfully');
-    });
-  }
 }
+
 
 /**
- * Remove a topic
+ * Add a Ticker
  */
-export function remove(req, res) {
-  const query = { id: req.params.id };
-  Topic.findOneAndRemove(query, (err) => {
-    if (err) {
-      console.log('Error on delete');
-      return res.status(500).send('We failed to delete for some reason');
-    }
+export function add(req) {
+    req.arbitrage = req.askB - req.askA;
+    req.arbitragePercentage = (100*req.askB)/req.askA - 100
+    Ticker.update({currencyPair: req.currencyPair, exchangePair: req.exchangePair},
+        req, {upsert: true, setDefaultsOnInsert: true}, () => {
+        });
+};
 
-    return res.status(200).send('Removed Successfully');
-  });
-}
+
+
 
 export default {
   all,
   add,
-  update,
-  remove
+  one,
 };

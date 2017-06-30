@@ -7,7 +7,7 @@ import { controllers, passport as passportConfig } from '../db';
 
 const usersController = controllers && controllers.users;
 const topicsController = controllers && controllers.topics;
-const arbitrageController = controllers && controllers.arbitrage;
+const arbitrageController = controllers && controllers.tickers;
 
 export default (app) => {
   // user routes

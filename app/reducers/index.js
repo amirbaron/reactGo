@@ -23,9 +23,11 @@ const isFetching = (state = false, action) => {
 const rootReducer = combineReducers({
   isFetching,
   topic,
+  arbitrage,
   user,
   message,
-  routing
+  routing,
+
 });
 
 export default rootReducer;

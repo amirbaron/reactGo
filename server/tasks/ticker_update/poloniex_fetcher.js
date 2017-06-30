@@ -1,10 +1,12 @@
 import axios from 'axios';
 import createRestApiClient from '../../utils/createRestApiClient';
 
+
 const apiEndpoint = 'https://poloniex.com/public/';
 
-const myTransformResponse = (data) => {
-    return data['BTC_ETH'];
+const myTransformResponse = (pair, allData) => {
+    let data = allData[pair];
+    return {exchange: 'Poloniex', last: parseFloat(data.last), ask: parseFloat(data.lowestAsk), bid:parseFloat(data.highestBid)};
 }
 
 export class PoloniexFetcher {
@@ -18,7 +20,7 @@ export class PoloniexFetcher {
             params: {command: 'returnTicker'},
             transformResponse: [].concat(
                 axios.defaults.transformResponse,
-                myTransformResponse,
+                myTransformResponse.bind(this, 'BTC_ETH'),
             ),
 
         });

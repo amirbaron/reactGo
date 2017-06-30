@@ -8,16 +8,6 @@ import {Table, TableHead, TableRow, TableCell} from 'react-toolbox/lib/table';
 import Tooltip from 'react-toolbox/lib/tooltip';
 
 
-// const data = [
-//     {name: 'Cupcake', calories: 305, fat: 3.7, sodium: 413, calcium: '3%', iron: '8%'},
-//     {name: 'Donut', calories: 452, fat: 25.0, sodium: 326, calcium: '2%', iron: '22%'},
-//     {name: 'Eclair', calories: 262, fat: 16.0, sodium: 337, calcium: '6%', iron: '7%'},
-//     {name: 'Frozen yogurt', calories: 159, fat: 6.0, sodium: 87, calcium: '14%', iron: '1%'},
-//     {name: 'Gingerbread', calories: 356, fat: 16.0, sodium: 327, calcium: '7%', iron: '16%'},
-//     {name: 'Ice cream sandwich', calories: 237, fat: 9.0, sodium: 129, calcium: '8%', iron: '1%'},
-//     {name: 'Jelly bean', calories: 375, fat: 0.0, sodium: 50, calcium: '0%', iron: '0%'},
-//     {name: 'KitKat', calories: 518, fat: 26.0, sodium: 54, calcium: '12%', iron: '6%'}
-// ];
 
 {/*<TableCell onClick={this.handleCurrencySortClick} sorted={this.getCurrencySorting()}>Currency Pair</TableCell>*/
 }
@@ -31,25 +21,6 @@ import Tooltip from 'react-toolbox/lib/tooltip';
 }
 {/*<TableCell numeric>Arbitrage %</TableCell>*/
 }
-
-const data = [
-    {
-        currencyPair: 'BTC/ETH',
-        exchangePair: 'poloniex/livecoin',
-        priceA: '100',
-        priceB: '150',
-        arbitrage: '-50',
-        arbitragePercentage: -50
-    },
-    {
-        currencyPair: 'BTC/ETH',
-        exchangePair: 'poloniex/hitbtc',
-        priceA: '100',
-        priceB: '120',
-        arbitrage: '-20',
-        arbitragePercentage: -20
-    }
-]
 
 
 const TooltipCell = Tooltip(TableCell);
@@ -111,15 +82,15 @@ class Arbitrage extends Component {
     }
 
     render() {
-        const sortedData = data;
+        const sortedData = this.props.data;
         return (
             <Table selectable={false} style={{marginTop: 10}}>
                 <TableHead>
                     <TableCell onClick={this.handleCurrencySortClick} sorted={this.getCurrencySorting()}>Currency
                         Pair</TableCell>
                     <TableCell >Exchange Pair</TableCell>
-                    <TableCell numeric>Price 1</TableCell>
-                    <TableCell numeric>Price 2</TableCell>
+                    <TableCell numeric>Ask A</TableCell>
+                    <TableCell numeric>Ask B</TableCell>
                     <TableCell numeric>Arbitrage</TableCell>
                     <TableCell numeric>Arbitrage %</TableCell>
                 </TableHead>
@@ -127,10 +98,10 @@ class Arbitrage extends Component {
                     <TableRow key={idx} selected={this.state.selected.indexOf(item.name) !== -1}>
                         <TableCell>{item.currencyPair}</TableCell>
                         <TableCell>{item.exchangePair}</TableCell>
-                        <TableCell numeric>{item.priceA}</TableCell>
-                        <TableCell numeric>{item.priceB}</TableCell>
+                        <TableCell numeric>{item.askA}</TableCell>
+                        <TableCell numeric>{item.askB}</TableCell>
                         <TableCell numeric>{item.arbitrage}</TableCell>
-                        <TableCell numeric>{item.arbitragePercentage} %</TableCell>
+                        <TableCell numeric>{item.arbitragePercentage}%</TableCell>
                     </TableRow>
                 ))}
             </Table>
@@ -147,7 +118,7 @@ Arbitrage.propTypes = {
 
 function mapStateToProps(state) {
     return {
-        data:state.arbitrage.data,
+        data:state.arbitrage,
         sortDirection: state.arbitrage.sortDirection,
         sortedColumn: state.arbitrage.sortBy,
     };

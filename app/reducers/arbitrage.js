@@ -6,11 +6,11 @@ export default function message(state = {
     type: 'SUCCESS'
 }, action = {}) {
     switch (action.type) {
-        case types.:
-        case types.SIGNUP_SUCCESS_USER:
-            return {...state, message: action.message, type: 'SUCCESS'};
-        case types.DISMISS_MESSAGE:
-            return {...state, message: '', type: 'SUCCESS'};
+        case types.REQUEST_SUCCESS:
+            if (action.data) return action.data;
+            return state;
+        case types.CHANGE_ARBITRAGE_SORTING:
+            return state;
         default:
             return state;
     }
