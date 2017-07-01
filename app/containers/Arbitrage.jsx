@@ -3,27 +3,15 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {
     changeSortBy,
+    refetchArbitrageData,
 } from '../actions/arbitrage';
 import {Table, TableHead, TableRow, TableCell} from 'react-toolbox/lib/table';
 import Tooltip from 'react-toolbox/lib/tooltip';
-
-
-
-{/*<TableCell onClick={this.handleCurrencySortClick} sorted={this.getCurrencySorting()}>Currency Pair</TableCell>*/
-}
-{/*<TableCell >Source Pair</TableCell>*/
-}
-{/*<TableCell numeric>Price A</TableCell>*/
-}
-{/*<TableCell numeric>Price B</TableCell>*/
-}
-{/*<TableCell numeric>Arbitrage</TableCell>*/
-}
-{/*<TableCell numeric>Arbitrage %</TableCell>*/
-}
+import {FormattedRelative, IntlProvider} from "react-intl";
 
 
 const TooltipCell = Tooltip(TableCell);
+const TooltipRow = Tooltip(TableRow);
 
 const sortByCaloriesAsc = (a, b) => {
     if (a.calories < b.calories) return -1;
@@ -81,51 +69,112 @@ class Arbitrage extends Component {
         return null;
     }
 
+    componentDidMount() {
+        this.startPoll();
+    }
+
+    componentWillUnmount() {
+        clearTimeout(this.timeout);
+    }
+
+    startPoll() {
+        this.timeout = setTimeout(() => {
+            this.props.refetchArbitrageData();
+            this.startPoll();
+        }, 500);
+    }
+
+
     render() {
         const sortedData = this.props.data;
         return (
-            <Table selectable={false} style={{marginTop: 10}}>
-                <TableHead>
-                    <TableCell onClick={this.handleCurrencySortClick} sorted={this.getCurrencySorting()}>Currency
-                        Pair</TableCell>
-                    <TableCell >Exchange Pair</TableCell>
-                    <TableCell numeric>Ask A</TableCell>
-                    <TableCell numeric>Ask B</TableCell>
-                    <TableCell numeric>Arbitrage</TableCell>
-                    <TableCell numeric>Arbitrage %</TableCell>
-                </TableHead>
-                {sortedData.map((item, idx) => (
-                    <TableRow key={idx} selected={this.state.selected.indexOf(item.name) !== -1}>
-                        <TableCell>{item.currencyPair}</TableCell>
-                        <TableCell>{item.exchangePair}</TableCell>
-                        <TableCell numeric>{item.askA}</TableCell>
-                        <TableCell numeric>{item.askB}</TableCell>
-                        <TableCell numeric>{item.arbitrage}</TableCell>
-                        <TableCell numeric>{item.arbitragePercentage}%</TableCell>
-                    </TableRow>
-                ))}
-            </Table>
+            <IntlProvider locale="en">
+                <Table selectable={false} style={{marginTop: 10}}>
+                    <TableHead>
+                        <TableCell onClick={this.handleCurrencySortClick} sorted={this.getCurrencySorting()}>Currency
+                            Pair</TableCell>
+                        <TableCell >Exchange Pair</TableCell>
+                        <TableCell numeric>Ask A</TableCell>
+                        <TableCell numeric>Ask B</TableCell>
+                        <TableCell numeric>Arbitrage</TableCell>
+                        <TableCell numeric>Arbitrage %</TableCell>
+                    </TableHead>
+                    {sortedData.map((item, idx) => (
+
+                        <TableRow  key={idx} selected={this.state.selected.indexOf(item.name) !== -1}>
+                            <TooltipCell tooltip={this.getTooltip(item)}>{item.currencyPair}</TooltipCell>
+                            <TooltipCell tooltip={this.getTooltip(item)}>{item.exchangePair}</TooltipCell>
+                            <TooltipCell numeric tooltip={this.getTooltip(item)}>{item.askA.toFixed(8)}</TooltipCell>
+                            <TooltipCell numeric tooltip={this.getTooltip(item)}>{item.askB.toFixed(8)}</TooltipCell>
+                            <TooltipCell numeric tooltip={this.getTooltip(item)}>{item.arbitrage.toFixed(8)}</TooltipCell>
+                            <TooltipCell numeric tooltip={this.getTooltip(item)}>{item.arbitragePercentage}%</TooltipCell>
+                        </TableRow>
+                    ))}
+                </Table>
+            </IntlProvider>
         );
+    }
+
+    // bidA: {type: Float},
+    // bidB: {type: Float},
+    // lastA: {type: Float},
+    // lastB: {type: Float},
+    // arbitragePercentage: {type: Float, index:true},
+    // arbitrage: {type: Float, index:true},
+    // date: {type: Date, default: Date.now},
+
+    getTooltip(item) {
+        let exchanges = item.exchangePair.split('/');
+
+        return <div>
+            <div>
+                {`${exchanges[0]} Last: ${item.lastA}`}
+            </div>
+            <div>
+                {`${exchanges[1]} Last: ${item.lastB}`}
+            </div>
+            <div>
+                {`${exchanges[0]} Ask: ${item.askA}`}
+            </div>
+            <div>
+                {`${exchanges[1]} Ask: ${item.askB}`}
+            </div>
+            <div>
+                {`${exchanges[0]} Bid: ${item.bidA}`}
+            </div>
+            <div>
+                {`${exchanges[1]} Bid: ${item.bidB}`}
+            </div>
+            <div>
+                {`Arbitrage: ${item.arbitragePercentage}%`}
+            </div>
+            <FormattedRelative value={item.date}/>
+        </div>;
     }
 }
 
-Arbitrage.propTypes = {
+Arbitrage
+    .propTypes = {
     data: PropTypes.array.isRequired,
     sortDirection: PropTypes.PropTypes.string,
     sortedColumn: PropTypes.PropTypes.string,
     changeSortBy: PropTypes.func.isRequired,
 };
 
-function mapStateToProps(state) {
+function
+
+mapStateToProps(state) {
     return {
-        data:state.arbitrage,
+        data: state.arbitrage,
         sortDirection: state.arbitrage.sortDirection,
         sortedColumn: state.arbitrage.sortBy,
+        isFetching: state.isFetching,
     };
 }
 
 // Read more about where to place `connect` here:
 // https://github.com/rackt/react-redux/issues/75#issuecomment-135436563
-export const ArbitrageContainer = connect(mapStateToProps, {
-    changeSortBy,
-})(Arbitrage);
+export const
+    ArbitrageContainer = connect(mapStateToProps, {
+        changeSortBy, refetchArbitrageData
+    })(Arbitrage);

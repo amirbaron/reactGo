@@ -55,6 +55,6 @@ export default (app) => {
   }
 
   if (arbitrageController){
-      app.get('/arbitrage', arbitrageController.all);
+      app.get('/arbitrages', arbitrageController.all);
   }
 };

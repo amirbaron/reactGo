@@ -3,7 +3,7 @@ import * as types from '../types';
 
 export default function message(state = {
     data: [],
-    type: 'SUCCESS'
+    type: 'SUCCESS',
 }, action = {}) {
     switch (action.type) {
         case types.REQUEST_SUCCESS:

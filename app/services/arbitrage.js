@@ -11,7 +11,7 @@ export default () => {
             }
             let resp = client.request({
                 method: 'GET',
-                url: '/arbitrage',
+                url: '/arbitrages',
                 params: params,
             });
             return resp;

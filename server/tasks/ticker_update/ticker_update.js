@@ -1,6 +1,7 @@
 import schedule from 'node-schedule';
 import {LivecoinFetcher} from './livecoin_fetcher';
 import {PoloniexFetcher} from './poloniex_fetcher';
+import {HitbtcFetcher} from './hitbtc_fetcher';
 
 import {controllers} from '../../db';
 
@@ -29,17 +30,21 @@ let buildTicker = (currencyPair, dataA, dataB) => {
         askB: dataB.ask,
         bidB: dataB.bid,
         lastB: dataB.last,
+        date: Date.now(),
     };
 };
 
 export const tickerUpdate = () => {
     const livecoinFetcher = new LivecoinFetcher();
     const poloniexFetcher = new PoloniexFetcher();
-    schedule.scheduleJob('0-59 * * * * *', function () {
-        axios.all([livecoinFetcher.getBtcEth(), poloniexFetcher.getBtcEth()])
+    const hitbtcFetcher = new HitbtcFetcher();
+    schedule.scheduleJob('*/2 * * * * *', function () {
+        axios.all([poloniexFetcher.getBtcEth(), hitbtcFetcher.getBtcEth()])
             .then(axios.spread(function (...args) {
-                for (let i = 0; i < args.length; i += 2) {
-                    tickersController.add(buildTicker('BTC/ETH', args[i].data, args[i + 1].data));
+                for (let i = 0; i < args.length; i += 1) {
+                    for (let j= i+1; j< args.length; j+=1) {
+                        tickersController.add(buildTicker('BTC/ETH', args[i].data, args[j].data));
+                    }
                 }
             })).catch((err) => console.log(err));
     });
