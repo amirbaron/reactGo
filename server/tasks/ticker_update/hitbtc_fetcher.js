@@ -46,10 +46,12 @@ export class HitbtcFetcher {
             .catch((err) => onCompleteCallback(err, null));
     };
 
-    translateName(tickerName){
+    translateName(tickerName) {
         switch (tickerName) {
-            case "BTC/ETH": return "ETHBTC";
-            case "BTC/LTC": return "LTCBTC";
+            case "BTC/ETH":
+                return "ETHBTC";
+            case "BTC/LTC":
+                return "LTCBTC";
         }
     }
 
