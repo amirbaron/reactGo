@@ -58,7 +58,6 @@ const _updateTicker = (tickerName) => {
         krakenFetcher.get(tickerName)].map(p => p.catch(e => undefined)))
         .then((results) => {
                 const dataArr = results.filter(res => res !== undefined);
-                console.log(dataArr);
                 for (let i = 0; i < dataArr.length; i += 1) {
                     for (let j = i + 1; j < dataArr.length; j += 1) {
                         tickersController.add(buildTicker(tickerName, dataArr[i], dataArr[j]));

@@ -11,19 +11,6 @@ import {FormattedRelative, IntlProvider} from "react-intl";
 
 
 const TooltipCell = Tooltip(TableCell);
-const TooltipRow = Tooltip(TableRow);
-
-const sortByCaloriesAsc = (a, b) => {
-    if (a.calories < b.calories) return -1;
-    if (a.calories > b.calories) return 1;
-    return 0;
-};
-
-const sortByCaloriesDesc = (a, b) => {
-    if (a.calories > b.calories) return -1;
-    if (a.calories < b.calories) return 1;
-    return 0;
-};
 
 
 class Arbitrage extends Component {
@@ -99,17 +86,20 @@ class Arbitrage extends Component {
                         <TableCell numeric>Arbitrage</TableCell>
                         <TableCell numeric>Arbitrage %</TableCell>
                     </TableHead>
-                    {sortedData.map((item, idx) => (
-
-                        <TableRow  key={idx} selected={this.state.selected.indexOf(item.name) !== -1}>
+                    {sortedData.map((item, idx) => {
+                        let color = item.arbitragePercentage.toFixed(8)>0 ? "green" : "red";
+                        return (
+                        <TableRow key={idx} selected={this.state.selected.indexOf(item.name) !== -1}>
                             <TooltipCell tooltip={this.getTooltip(item)}>{item.currencyPair}</TooltipCell>
                             <TooltipCell tooltip={this.getTooltip(item)}>{item.exchangePair}</TooltipCell>
                             <TooltipCell numeric tooltip={this.getTooltip(item)}>{item.askA.toFixed(8)}</TooltipCell>
                             <TooltipCell numeric tooltip={this.getTooltip(item)}>{item.askB.toFixed(8)}</TooltipCell>
-                            <TooltipCell numeric tooltip={this.getTooltip(item)}>{item.arbitrage.toFixed(8)}</TooltipCell>
-                            <TooltipCell numeric tooltip={this.getTooltip(item)}>{item.arbitragePercentage}%</TooltipCell>
+                            <TooltipCell numeric style = {{color:color}}
+                                         tooltip={this.getTooltip(item)}>{item.arbitrage.toFixed(8)}</TooltipCell>
+                            <TooltipCell style = {{color:color}} numeric
+                                         tooltip={this.getTooltip(item)}>{item.arbitragePercentage.toFixed(8)}%</TooltipCell>
                         </TableRow>
-                    ))}
+                    )})}
                 </Table>
             </IntlProvider>
         );
@@ -126,7 +116,7 @@ class Arbitrage extends Component {
     getTooltip(item) {
         let exchanges = item.exchangePair.split('/');
 
-        return <div>
+        return (<div>
             <div>
                 {`${exchanges[0]} Last: ${item.lastA}`}
             </div>
@@ -149,21 +139,18 @@ class Arbitrage extends Component {
                 {`Arbitrage: ${item.arbitragePercentage}%`}
             </div>
             <FormattedRelative value={item.date}/>
-        </div>;
+        </div>);
     }
 }
 
-Arbitrage
-    .propTypes = {
+Arbitrage.propTypes = {
     data: PropTypes.array.isRequired,
     sortDirection: PropTypes.PropTypes.string,
     sortedColumn: PropTypes.PropTypes.string,
     changeSortBy: PropTypes.func.isRequired,
 };
 
-function
-
-mapStateToProps(state) {
+function mapStateToProps(state) {
     return {
         data: state.arbitrage,
         sortDirection: state.arbitrage.sortDirection,
