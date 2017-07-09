@@ -2,7 +2,7 @@ import schedule from 'node-schedule';
 import {LivecoinFetcher} from './livecoin_fetcher';
 import {PoloniexFetcher} from './poloniex_fetcher';
 import {HitbtcFetcher} from './hitbtc_fetcher';
-
+import {KrakenFetcher} from './kraken_fetcher';
 import {controllers} from '../../db';
 
 const tickersController = controllers && controllers.tickers;
@@ -10,6 +10,7 @@ const tickersController = controllers && controllers.tickers;
 import axios from 'axios';
 import {polyfill} from 'es6-promise';
 polyfill();
+
 
 // currencyPair: { type: [String], index: true },
 // exchangePair: { type: [String], index: true },
@@ -35,20 +36,34 @@ let buildTicker = (currencyPair, dataA, dataB) => {
 };
 
 export const tickerUpdate = () => {
-    const livecoinFetcher = new LivecoinFetcher();
-    const poloniexFetcher = new PoloniexFetcher();
-    const hitbtcFetcher = new HitbtcFetcher();
-    schedule.scheduleJob('*/2 * * * * *', function () {
-        axios.all([poloniexFetcher.getBtcEth(), hitbtcFetcher.getBtcEth()])
-            .then(axios.spread(function (...args) {
-                for (let i = 0; i < args.length; i += 1) {
-                    for (let j= i+1; j< args.length; j+=1) {
-                        tickersController.add(buildTicker('BTC/ETH', args[i].data, args[j].data));
-                    }
-                }
-            })).catch((err) => console.log(err));
+    schedule.scheduleJob('*/1 * * * * *', function () {
+        _update();
     });
 };
 
+const _update = () => {
+    _updateTicker("BTC/ETH");
+    _updateTicker("BTC/LTC");
+};
 
 
+const _updateTicker = (tickerName) => {
+    const livecoinFetcher = new LivecoinFetcher();
+    const poloniexFetcher = new PoloniexFetcher();
+    const hitbtcFetcher = new HitbtcFetcher();
+    const krakenFetcher = new KrakenFetcher();
+
+    Promise.all([poloniexFetcher.get(tickerName),
+        hitbtcFetcher.get(tickerName),
+        krakenFetcher.get(tickerName)].map(p => p.catch(e => e)))
+        .then((results) => {
+                const dataArr = results.filter(res => res !== undefined);
+                for (let i = 0; i < dataArr.length; i += 1) {
+                    for (let j = i + 1; j < dataArr.length; j += 1) {
+                        tickersController.add(buildTicker(tickerName, dataArr[i], dataArr[j]));
+                    }
+                }
+            }
+        )
+        .catch(e => console.log(e));
+};

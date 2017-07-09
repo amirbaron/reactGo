@@ -31,11 +31,12 @@ export default (store) => {
   };
   return (
     <Route path="/" component={App}>
-      <IndexRoute component={Arbitrage} fetchData={fetchArbitrageData}  onEnter={requireAuth} />
+      {/*<IndexRoute component={Arbitrage} fetchData={fetchArbitrageData}  onEnter={requireAuth} />*/}
+      <IndexRoute component={Arbitrage} fetchData={fetchArbitrageData} />
       <Route path="login" component={LoginOrRegister} onEnter={redirectAuth} />
       <Route path="dashboard" component={Dashboard} onEnter={requireAuth} />
       <Route path="about" component={About} />
-      <Route path="arbitrage" component={Arbitrage} fetchData={fetchArbitrageData} onEnter={requireAuth}/>
+      <Route path="arbitrage" component={Arbitrage} fetchData={fetchArbitrageData}/>
     </Route>
   );
 };
